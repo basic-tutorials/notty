@@ -8,11 +8,22 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from .models import Category, Subcategory
+from .serializers import CategorySerializer, SubcategorySerializer
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+class SubcategoryViewSet(viewsets.ModelViewSet):
+    queryset = Subcategory.objects.all()
+    serializer_class = SubcategorySerializer
 
 class NoteViewSet(viewsets.ModelViewSet):
     queryset = Note.objects.all().order_by('-created_at')
     serializer_class = NoteSerializer
     permission_classes = [IsAuthenticated] 
+
 
 
 class RegisterView(generics.CreateAPIView):
