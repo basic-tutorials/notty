@@ -1,0 +1,2 @@
+# notty
+note taking app
