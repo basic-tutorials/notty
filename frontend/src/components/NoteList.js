@@ -1,21 +1,17 @@
-// src/components/NoteList.js
-
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { fetchNotes, deleteNote } from '../api';
 import { Link } from 'react-router-dom';
 
 const NoteList = () => {
   const [notes, setNotes] = useState([]);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     const loadNotes = async () => {
       try {
-        const data = await fetchNotes();
-        setNotes(data);
+        const response = await fetchNotes();  // Fetch the list of notes
+        setNotes(response);
       } catch (error) {
         console.error('Failed to load notes:', error);
-        setError('Failed to load notes. Please try again.');
       }
     };
 
@@ -24,11 +20,11 @@ const NoteList = () => {
 
   const handleDelete = async (id) => {
     try {
-      await deleteNote(id);
-      setNotes(notes.filter(note => note.id !== id));
+      await deleteNote(id);  // Delete the note
+      setNotes(notes.filter(note => note.id !== id));  // Update the list after deletion
+      alert('Note deleted successfully!');
     } catch (error) {
-      console.error('Error deleting note:', error);
-      setError('Failed to delete note. Please try again.');
+      console.error('Failed to delete note:', error);
     }
   };
 
@@ -36,7 +32,6 @@ const NoteList = () => {
     <div>
       <h1>Your Notes</h1>
       <Link to="/create-note">Add New Note</Link>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
       <ul>
         {notes.map(note => (
           <li key={note.id}>

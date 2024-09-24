@@ -7,6 +7,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import NoteList from './components/NoteList';
 import NoteForm from './components/NoteForm';
+import NoteEdit from './components/NoteEdit';
 
 function App() {
   const isAuthenticated = !!localStorage.getItem('access_token');  // Check if token exists
@@ -27,6 +28,7 @@ function App() {
         />
         {/* Redirect unknown routes to login */}
         <Route path="*" element={<Navigate to="/login" />} />
+        <Route path="/edit-note/:id" element={<NoteEdit />} />
       </Routes>
     </Router>
   );

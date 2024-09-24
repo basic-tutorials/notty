@@ -54,6 +54,10 @@ class NoteListCreateView(generics.ListCreateAPIView):
         serializer.save(user=self.request.user)
 
 class NoteDetailView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = NoteSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwner]
     queryset = Note.objects.all()
+    serializer_class = NoteSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwner]  # Only the owner can edit
+
+    def get_queryset(self):
+        # Return only notes owned by the user
+        return Note.objects.filter(user=self.request.user)

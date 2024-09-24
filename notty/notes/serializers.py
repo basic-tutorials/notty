@@ -38,10 +38,11 @@ class NoteSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'content', 'category', 'subcategory', 'created_at']
 
     def create(self, validated_data):
-        user = self.context['request'].user  # Get the authenticated user
-        note = Note.objects.create(user=user, **validated_data)
-        return note
-
+        # The user is automatically passed from the view through self.context['request'].user
+        # So we exclude user from validated_data to avoid passing it twice.
+        validated_data['user'] = self.context['request'].user
+        return Note.objects.create(**validated_data)
+    
     def update(self, instance, validated_data):
         # Ensure that the note being updated belongs to the authenticated user
         if instance.user != self.context['request'].user:

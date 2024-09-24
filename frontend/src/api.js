@@ -76,6 +76,9 @@ export const fetchNotes = async () => {
   }
 };
 
+// Fetch a single note by ID
+export const getNote = (id) => axiosInstance.get(`/notes/${id}/`);
+
 // Create a new note
 export const createNote = (noteData) => axiosInstance.post('/notes/', noteData);
 

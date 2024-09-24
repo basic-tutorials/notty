@@ -1,22 +1,19 @@
-// src/components/NoteForm.js
 import React, { useState } from 'react';
 import { createNote } from '../api';
+import { useNavigate } from 'react-router-dom';
 
 const NoteForm = () => {
   const [formData, setFormData] = useState({ title: '', content: '' });
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await createNote(formData);
       alert('Note created successfully!');
-      setFormData({ title: '', content: '' });  // Clear the form after success
+      navigate('/notes');  // Redirect to the notes list after creation
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        console.error('Unauthorized: Token may be invalid or expired');
-      } else {
-        console.error('Error creating note:', error);
-      }
+      console.error('Failed to create note:', error);
     }
   };
 
@@ -39,7 +36,7 @@ const NoteForm = () => {
         onChange={handleChange}
         required
       />
-      <button type="submit">Add Note</button>
+      <button type="submit">Create Note</button>
     </form>
   );
 };
