@@ -6,11 +6,12 @@ import { Link, useNavigate } from 'react-router-dom'; // Replace useHistory with
 const Header = () => {
   const navigate = useNavigate(); // Replace useHistory with useNavigate
 
-  const logout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    navigate('/login'); // Use navigate instead of history.push
-  };
+const logout = () => {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+  navigate('/login');
+};
+
 
   return (
     <header>

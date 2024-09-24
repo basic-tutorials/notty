@@ -1,53 +1,59 @@
-from rest_framework import viewsets
-from rest_framework import generics  
-from .models import Note
-from .serializers import NoteSerializer
+from rest_framework import generics, permissions
 from django.contrib.auth.models import User
-from .serializers import RegisterSerializer
-from rest_framework.permissions import IsAuthenticated
-from rest_framework import permissions, status
-from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
-from .models import Category, Subcategory
-from .serializers import CategorySerializer, SubcategorySerializer
+from .models import Note, Category, Subcategory
+from .serializers import NoteSerializer, CategorySerializer, SubcategorySerializer, RegisterSerializer
+from .permissions import IsOwner
 
-class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-
-class SubcategoryViewSet(viewsets.ModelViewSet):
-    queryset = Subcategory.objects.all()
-    serializer_class = SubcategorySerializer
-
-class NoteViewSet(viewsets.ModelViewSet):
-    queryset = Note.objects.all().order_by('-created_at')
-    serializer_class = NoteSerializer
-    permission_classes = [IsAuthenticated] 
-
-
-
+# User Registration View
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = self.perform_create(serializer)
-        
-        # Generate token for the new user
-        refresh = RefreshToken.for_user(user)
-        
-        return Response(
-            {
-                "message": "User registered successfully",
-                "user": serializer.data,
-                "refresh": str(refresh),
-                "access": str(refresh.access_token),
-            },
-            status=status.HTTP_201_CREATED
-        )
+# Category Views
+class CategoryListCreateView(generics.ListCreateAPIView):
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Category.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        return serializer.save()
+        serializer.save(user=self.request.user)
+
+class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
+    queryset = Category.objects.all()
+
+# Subcategory Views
+class SubcategoryListCreateView(generics.ListCreateAPIView):
+    serializer_class = SubcategorySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Subcategory.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class SubcategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = SubcategorySerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
+    queryset = Subcategory.objects.all()
+
+# Note Views
+class NoteListCreateView(generics.ListCreateAPIView):
+    serializer_class = NoteSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Note.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class NoteDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = NoteSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
+    queryset = Note.objects.all()

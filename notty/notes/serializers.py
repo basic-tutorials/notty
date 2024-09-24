@@ -33,10 +33,17 @@ class SubcategorySerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'category']
 
 class NoteSerializer(serializers.ModelSerializer):
-    # Accept category and subcategory as IDs
-    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
-    subcategory = serializers.PrimaryKeyRelatedField(queryset=Subcategory.objects.all())
-
     class Meta:
         model = Note
-        fields = ['id', 'title', 'content', 'created_at', 'category', 'subcategory']
+        fields = ['id', 'title', 'content', 'category', 'subcategory', 'created_at']
+
+    def create(self, validated_data):
+        user = self.context['request'].user  # Get the authenticated user
+        note = Note.objects.create(user=user, **validated_data)
+        return note
+
+    def update(self, instance, validated_data):
+        # Ensure that the note being updated belongs to the authenticated user
+        if instance.user != self.context['request'].user:
+            raise serializers.ValidationError("You do not have permission to edit this note.")
+        return super().update(instance, validated_data)
