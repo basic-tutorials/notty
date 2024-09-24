@@ -1,29 +1,30 @@
-// src/components/Header.js
-
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Replace useHistory with useNavigate
+import { Link, useNavigate } from 'react-router-dom';
 
 const Header = () => {
-  const navigate = useNavigate(); // Replace useHistory with useNavigate
+  const isAuthenticated = !!localStorage.getItem('access_token');
+  const navigate = useNavigate();
 
-const logout = () => {
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('refresh_token');
-  navigate('/login');
-};
-
+  const handleLogout = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    navigate('/login');
+  };
 
   return (
-    <header>
-      <nav>
-        <ul>
-          <li><Link to="/notes">Notes</Link></li>
-          <li><Link to="/login">Login</Link></li>
-          <li><Link to="/register">Register</Link></li>
-          <li><button onClick={logout}>Logout</button></li>
-        </ul>
-      </nav>
-    </header>
+    <div className="header">
+      <h1>Notes</h1>
+      {isAuthenticated ? (
+        <div>
+          <button onClick={handleLogout}>Logout</button>
+        </div>
+      ) : (
+        <div>
+          <Link to="/login">Login</Link>
+          <Link to="/register">Register</Link>
+        </div>
+      )}
+    </div>
   );
 };
 

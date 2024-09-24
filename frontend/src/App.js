@@ -1,35 +1,32 @@
-// src/App.js
-
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Sidebar from './components/Sidebar';
 import Header from './components/Header';
-import Login from './components/Login';
-import Register from './components/Register';
-import NoteList from './components/NoteList';
-import NoteForm from './components/NoteForm';
-import NoteEdit from './components/NoteEdit';
+import NoteForm from './pages/NoteForm';
+import NoteEdit from './pages/NoteEdit';
+import NoteList from './pages/NoteList';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import './App.css';
 
 function App() {
-  const isAuthenticated = !!localStorage.getItem('access_token');  // Check if token exists
+  const isAuthenticated = !!localStorage.getItem('access_token');
 
   return (
     <Router>
-      <Header />
-      <Routes>
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/notes"
-          element={isAuthenticated ? <NoteList /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/create-note"
-          element={isAuthenticated ? <NoteForm /> : <Navigate to="/login" />}
-        />
-        {/* Redirect unknown routes to login */}
-        <Route path="*" element={<Navigate to="/login" />} />
-        <Route path="/edit-note/:id" element={<NoteEdit />} />
-      </Routes>
+      <div className="app">
+        <Sidebar />
+        <div className="main-content">
+          <Header />
+          <Routes>
+            <Route path="/notes" element={isAuthenticated ? <NoteList /> : <Login />} />
+            <Route path="/create-note" element={isAuthenticated ? <NoteForm /> : <Login />} />
+            <Route path="/edit-note/:id" element={isAuthenticated ? <NoteEdit /> : <Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Routes>
+        </div>
+      </div>
     </Router>
   );
 }

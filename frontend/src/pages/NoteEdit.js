@@ -3,32 +3,28 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getNote, updateNote } from '../api';
 
 const NoteEdit = () => {
-  const { id } = useParams();  // Get note ID from the URL
+  const { id } = useParams();
   const [formData, setFormData] = useState({ title: '', content: '' });
   const navigate = useNavigate();
 
   useEffect(() => {
     const loadNote = async () => {
       try {
-        const response = await getNote(id);  // Fetch the existing note data
-        setFormData({
-          title: response.data.title,
-          content: response.data.content,
-        });  // Set the data into form fields
+        const response = await getNote(id);
+        setFormData({ title: response.data.title, content: response.data.content });
       } catch (error) {
         console.error('Failed to load note:', error);
       }
     };
-
     loadNote();
-  }, [id]);  // Only run this when the component mounts or the ID changes
+  }, [id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await updateNote(id, formData);  // Update the note with the new data
+      await updateNote(id, formData);
       alert('Note updated successfully!');
-      navigate('/notes');  // Redirect to the notes list after update
+      navigate('/notes');
     } catch (error) {
       console.error('Failed to update note:', error);
     }
@@ -42,14 +38,14 @@ const NoteEdit = () => {
         type="text"
         name="title"
         placeholder="Title"
-        value={formData.title}  // Use the state to control the input
+        value={formData.title}
         onChange={handleChange}
         required
       />
       <textarea
         name="content"
         placeholder="Content"
-        value={formData.content}  // Use the state to control the textarea
+        value={formData.content}
         onChange={handleChange}
         required
       />

@@ -4,11 +4,12 @@ import { Link } from 'react-router-dom';
 
 const NoteList = () => {
   const [notes, setNotes] = useState([]);
+  const isAuthenticated = !!localStorage.getItem('access_token');
 
   useEffect(() => {
     const loadNotes = async () => {
       try {
-        const response = await fetchNotes();  // Fetch the list of notes
+        const response = await fetchNotes();
         setNotes(response);
       } catch (error) {
         console.error('Failed to load notes:', error);
@@ -20,8 +21,8 @@ const NoteList = () => {
 
   const handleDelete = async (id) => {
     try {
-      await deleteNote(id);  // Delete the note
-      setNotes(notes.filter(note => note.id !== id));  // Update the list after deletion
+      await deleteNote(id);
+      setNotes(notes.filter(note => note.id !== id));
       alert('Note deleted successfully!');
     } catch (error) {
       console.error('Failed to delete note:', error);
@@ -31,14 +32,18 @@ const NoteList = () => {
   return (
     <div>
       <h1>Your Notes</h1>
-      <Link to="/create-note">Add New Note</Link>
+      {isAuthenticated && <Link to="/create-note">Add New Note</Link>}
       <ul>
         {notes.map(note => (
           <li key={note.id}>
             <h2>{note.title}</h2>
             <p>{note.content}</p>
-            <Link to={`/edit-note/${note.id}`}>Edit</Link>
-            <button onClick={() => handleDelete(note.id)}>Delete</button>
+            {isAuthenticated && (
+              <>
+                <Link to={`/edit-note/${note.id}`}>Edit</Link>
+                <button onClick={() => handleDelete(note.id)}>Delete</button>
+              </>
+            )}
           </li>
         ))}
       </ul>
